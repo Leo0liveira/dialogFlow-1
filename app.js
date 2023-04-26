@@ -10,12 +10,21 @@ app.post('/chat', (req, res) => {
   const city = req.body.queryResult.parameters.city;
   const unit = req.body.queryResult.parameters.unit;
 
-  request(`https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=${APIKey}&units=${unit}`, (error, response, body) => {
+  request(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${APIKey}&units=${unit}`, (error, response, body) => {
     if (!error && response.statusCode === 200) {
       const data = JSON.parse(body);
+      const temperature = data.main.temp;
       const weatherDescription = data.weather[0].description;
+      const country = data.sys.country; // adicionado para obter o país onde a cidade está localizada
+      const region = data.sys.region; // adicionado para obter a região onde a cidade está localizada
+      let locationInfo = '';
+      if (region) {
+        locationInfo = `${city}, ${region}, ${country}`;
+      } else {
+        locationInfo = `${city}, ${country}`;
+      }
       res.send({
-        fulfillmentText: `A previsão do tempo em ${city} é ${weatherDescription}.`
+        fulfillmentText: `A temperatura em ${locationInfo} é ${temperature} graus Celsius e o tempo está ${weatherDescription}.`
       });
     } else {
       res.send({
