@@ -10,13 +10,13 @@ app.post('/chat', (req, res) => {
   const city = req.body.queryResult.parameters.city;
   const unit = req.body.queryResult.parameters.unit;
 
-  request(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${APIKey}&units=${unit}`, (error, response, body) => {
+  request(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${APIKey}&units=${unit}&lang=pt_br`, (error, response, body) => {
     if (!error && response.statusCode === 200) {
       const data = JSON.parse(body);
       const temperature = data.main.temp;
       const weatherDescription = data.weather[0].description;
-      const country = data.sys.country; // adicionado para obter o país onde a cidade está localizada
-      const region = data.sys.region; // adicionado para obter a região onde a cidade está localizada
+      const country = data.sys.country;
+      const region = data.sys.region;
       let locationInfo = '';
       if (region) {
         locationInfo = `${city}, ${region}, ${country}`;
@@ -24,7 +24,7 @@ app.post('/chat', (req, res) => {
         locationInfo = `${city}, ${country}`;
       }
       res.send({
-        fulfillmentText: `A temperatura em ${locationInfo} é ${temperature} graus Celsius e o tempo está ${weatherDescription}.`
+        fulfillmentText: `A temperatura em ${locationInfo} é de ${temperature} e o tempo está ${weatherDescription}.`
       });
     } else {
       res.send({
@@ -34,7 +34,7 @@ app.post('/chat', (req, res) => {
   });
 });
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
 
 app.listen(PORT, () => {
   console.log(`Servidor iniciado na porta ${PORT}`);
